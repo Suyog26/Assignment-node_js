@@ -21,9 +21,8 @@ app.get('/According_ratio/CF', async (req, res) => {
                 const {Country_Region,Province_State,Case_Fatality_Ratio}=rawData
                 return {Country_Region,Province_State,Case_Fatality_Ratio}
             
-            }if(rawData.Case_Fatality_Ratio=""){
-                return 0
-            }else{
+            }
+            else(rawData.Case_Fatality_Ratio="");{
                 return 0
             }
             
