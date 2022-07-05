@@ -5,18 +5,32 @@ const express =require("express");
 const app = express();
 const router=require("./Routers/Routers");
 
-app.get("/",(req,res)=>{
-    console.log("hello wrold")
-    res.status(200).send("Home page  ")
+app.get("/home/:name",(req,res)=>{
+    console.log("hello world")
+    res.status(200).send(" welcome to home page ! "+ req.params.name)
 })
 
-app.get('/summary-stats', async (req, res) => {
+
+app.get('/According_ratio/CF', async (req, res) => {
     try {
         const { data } = await axios.get("https://coronavirus.m.pipedream.net/")
 
-        const { summaryStats } = data
-        console.log(summaryStats);
-        res.status(200).send({ summaryStats })
+        const { rawData } = data
+        const array=rawData.map((rawData)=>{
+            if (rawData.Case_Fatality_Ratio < 1){
+                const {Country_Region,Province_State,Case_Fatality_Ratio}=rawData
+                return {Country_Region,Province_State,Case_Fatality_Ratio}
+            
+            }if(rawData.Case_Fatality_Ratio=""){
+                return 0
+            }else{
+                return 0
+            }
+            
+        });
+            
+        res.status(200).send({ array })
+       
     }
     catch (error) {
         res.status(500).send({ error })
@@ -25,154 +39,29 @@ app.get('/summary-stats', async (req, res) => {
 })
 
 
-app.get('/country/', async (req, res) => {
-    
+app.get('/deaths/countrywise', async (req, res) => {
     try {
-        
-        const { country_name }=req.query;
-
         const { data } = await axios.get("https://coronavirus.m.pipedream.net/")
-
+        const { country_name }=req.query;
         const { rawData } = data
-
-        
         const finalData=rawData.filter((item)=>{
             return item.Country_Region === country_name
         })
        
-        res.status(200).send({ finalData })
-    }
-    catch (error) {
-        res.status(500).send({ error })
-    }
-
-})
-
-app.get('/state/', async (req, res) => {
-    
-    try {
+        .reduce((total,item)=>{
         
-        const { state_name , }=req.query;
-
-        const { data } = await axios.get("https://coronavirus.m.pipedream.net/")
-
-        const { rawData } = data
-
-        
-        const finalData=rawData.filter((item)=>{
-            return item.Province_State === state_name
-        })
-       
-        res.status(200).send({ finalData })
-    }
-    catch (error) {
-        res.status(500).send({ error })
-    }
-
-})
-
-
-app.get('/importantdata', async (req, res) => {
-    try {
-        const { data } = await axios.get("https://coronavirus.m.pipedream.net/")
-
-        const { rawData } = data
-        const responsivedata=rawData.map((rawData)=>{
-            const {Province_State,Country_Region,Last_Update,Confirmed,Deaths}=rawData;
-            return {Province_State,Country_Region,Last_Update,Confirmed,Deaths}
-        })
-        res.status(200).send({ responsivedata })
-    }
-    catch (error) {
-        res.status(500).send({ error })
-    }
-
-})
-
-app.get("/keys",async(req,res)=>{
-    try{
-        const{data}=await axios.get("https://coronavirus.m.pipedream.net/")
-
-        const {rawData}=data
-        const result=Object.keys(data)
-        return res.status(200).send({result})
-    }
-    catch(error){
-        res.send(500).send({error})
-    };
-})
-
-app.get("/values",async(req,res)=>{
-    try{
-        const{data}=await axios.get("https://coronavirus.m.pipedream.net/")
-
-        const {rawData}=data
-        const result=Object.values(data)
-        return res.status(200).send({result})
-    }
-    catch(error){
-        res.send(500).send({error})
-    };
-})
-
-app.get("/enteries",async(req,res)=>{
-    try{
-        const{data}=await axios.get("https://coronavirus.m.pipedream.net/")
-
-        const {rawData}=data
-        const result=Object.entries(rawData)
-        return res.status(200).send({result})
-    }
-    catch(error){
-        res.send(500).send({error})
-    };
-})
-
-
-app.get('/abc', async (req, res) => {
-    
-    try {
-        
-        const { country_name }=req.query;
-
-        const { data } = await axios.get("https://coronavirus.m.pipedream.net/")
-
-        const { rawData } = data
-
-        
-        const finalData=rawData.filter((item)=>{
-            if(item.Deaths<5000 ){
-                return item.Country_Region === country_name
-            };
-        
-        })
-       
-        res.status(200).send({ finalData })
-    }
-    catch (error) {
-        res.status(500).send({ error })
-    }
-
-})
-
-app.get('/dsa', async (req, res) => {
-    try {
-        const { data } = await axios.get("https://coronavirus.m.pipedream.net/")
-
-        const { rawData } = data
-        const responsivedata=rawData.reverse(()=>{
-            const {Country_Region,Last_Update,Confirmed,Deaths}=rawData;
-            return {Country_Region,Last_Update,Confirmed,Deaths}
-        });
+            const a=parseInt(item.Deaths)
             
-        res.status(200).send({ responsivedata })
+            return total+ a
+        },0);
+            
+        res.status(200).send({ finalData })
     }
     catch (error) {
         res.status(500).send({ error })
     }
 
 })
-
 app.use(router);
 
  
