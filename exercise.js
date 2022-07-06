@@ -20,23 +20,17 @@ app.get('/According_ratio/CF', async (req, res) => {
             if (rawData.Case_Fatality_Ratio < 1){
                 const {Country_Region,Province_State,Case_Fatality_Ratio}=rawData
                 return {Country_Region,Province_State,Case_Fatality_Ratio}
-            
-            }
-            else(rawData.Case_Fatality_Ratio="");{
+            }else(rawData.Case_Fatality_Ratio="");{
                 return 0
             }
-            
         });
-            
         res.status(200).send({ array })
-       
     }
     catch (error) {
         res.status(500).send({ error })
     }
 
 })
-
 
 app.get('/deaths/countrywise', async (req, res) => {
     try {
@@ -48,12 +42,9 @@ app.get('/deaths/countrywise', async (req, res) => {
         })
        
         .reduce((total,item)=>{
-        
             const a=parseInt(item.Deaths)
-            
             return total+ a
         },0);
-            
         res.status(200).send({ finalData })
     }
     catch (error) {
@@ -63,5 +54,4 @@ app.get('/deaths/countrywise', async (req, res) => {
 })
 app.use(router);
 
- 
 app.listen(5000,()=>console.log("server is listening.."));
